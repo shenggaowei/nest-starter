@@ -9,13 +9,17 @@ import {
   Query,
   Redirect,
 } from '@nestjs/common';
-import { CreateCatDto } from './interfaces/cats';
+import { CreateCatDto } from './dto/create-cat.dto';
+import { CatsService } from './cats.service';
+import { Cat } from './interfaces/cat.interface';
 
 @Controller('cats')
 export class CatsController {
+  constructor(private catsService: CatsService) {}
   @Get()
-  findAll(@Query('age') age: number, @Query('breed') breed: string): string {
-    return `This action returns all cats filtered by age: ${age} and breed: ${breed}`;
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async findAll(): Promise<Cat[]> {
+    return this.catsService.findAll();
   }
 
   @Get(':id')
@@ -38,6 +42,7 @@ export class CatsController {
   @Header('Cache-Control', 'no-cache')
   @HttpCode(200)
   create(@Body() createCatDto: CreateCatDto): CreateCatDto {
+    this.catsService.create(createCatDto);
     return createCatDto;
   }
 
